@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
-from datetime import date
 import datetime
 import requests
 
@@ -9,7 +8,10 @@ tmp = datetime.date.today()
 today = tmp.strftime('%Y%m%d')
 html = 'https://www.twse.com.tw/exchangeReport/MI_5MINS?response=html&date='+today
 head_html = urlopen(html).read().decode("utf-8")
-a=((head_html.split('</tbody>')[0]).split('<td>')[-1]).split('</td>')[0]
+if datetime.datetime.now().strftime('%H%M') > '1330':
+    a=((head_html.split('</tbody>')[0]).split('<td>')[-1]).split('</td>')[0]
+else:
+    a = 'No Data'
 print('每5秒委託成交統計: ', a)
 
 html = 'https://www.taifex.com.tw/cht/3/futContractsDate'
@@ -75,11 +77,12 @@ for i in range(len(tr1tdSell)):
         a = abs(float(tr1tdBuy[i][5]) - float(tr1tdSell[i][5]))
         fairPrice.append(a)
 print('')
-weektoday = date.today().weekday()
+
+weektoday = datetime.date.today().weekday()
 if weektoday == 3:
-    opType = 1
-else:
     opType = 2
+else:
+    opType = 3
 for i in range(opType):
     a = fairPrice.index(min(fairPrice))
     fairPrice[a] = 9999
